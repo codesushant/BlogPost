@@ -85,8 +85,8 @@ public class BasicAuthResourceTest {
         User credential = new User("sushant.raj", "1234");
         System.out.println(credential);
 
-        Response response = resourceExtension.target("blog/checkauth1").request()
-                .header(HttpHeaders.AUTHORIZATION, credential)
+        Response response = resourceExtension.target("/blog/checkauth1").request()
+                .header(HttpHeaders.AUTHORIZATION, "sushant.raj:1234")
                 .get(Response.class);
 
 //        Response response = resourceExtension
