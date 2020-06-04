@@ -9,6 +9,9 @@ import com.learn.raj.entities.Comment;
 import com.learn.raj.entities.CommentReply;
 import com.learn.raj.entities.User;
 import com.learn.raj.resources.BlogResource;
+import com.learn.raj.resources.SampleResource;
+import com.learn.raj.services.EmailService;
+import com.learn.raj.services.impl.EmailServiceImpl;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -57,8 +60,11 @@ public class App extends Application<BlogPostConfiguration> {
         final UserDao userDao = new UserDao(hibernateBundle.getSessionFactory());
         final CommentDao commentDao = new CommentDao(hibernateBundle.getSessionFactory());
         final CommentReplyDao commentReplyDao = new CommentReplyDao(hibernateBundle.getSessionFactory());
-        final BlogResource blogResource = new BlogResource(blogDao, userDao, commentDao, commentReplyDao);
+        final EmailService emailService = new EmailServiceImpl();
+        final BlogResource blogResource = new BlogResource(blogDao, userDao, commentDao, commentReplyDao, emailService);
         environment.jersey().register(blogResource);
+        environment.jersey().register(SampleResource.class);
+
 //        environment.jersey().register(AuthFactory.binder(
 //                new BasicAuthFactory<>(
 //                        new BlogAuthenticator(),

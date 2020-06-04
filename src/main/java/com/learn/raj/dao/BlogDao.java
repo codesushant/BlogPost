@@ -5,6 +5,7 @@ import com.learn.raj.requests.BlogRequest;
 import com.learn.raj.requests.BlogUpdateRequest;
 import com.learn.raj.entities.User;
 import io.dropwizard.hibernate.AbstractDAO;
+import org.eclipse.jetty.util.StringUtil;
 import org.hibernate.SessionFactory;
 
 import java.sql.Timestamp;
@@ -25,11 +26,11 @@ public class BlogDao extends AbstractDAO<Blog> {
         return list(namedQuery("com.learn.java.Blogs.findAll"));
     }
 
-    public boolean postBlog(BlogRequest blogRequest, User user){
+    public Blog postBlog(BlogRequest blogRequest, User user){
         Blog blogObj = new Blog(user.getUserId(), blogRequest.getTitle(), blogRequest.getContent(),blogRequest.getAuthorName(),
                 new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()), 0);
-        persist(blogObj);
-        return true;
+        blogObj = saveBlog(blogObj);
+        return blogObj;
     }
 
     public Blog getBlog(long blogId){
@@ -37,21 +38,18 @@ public class BlogDao extends AbstractDAO<Blog> {
         return blog;
     }
 
-    public boolean saveBlog(Blog blog){
+    public Blog saveBlog(Blog blog){
         persist(blog);
-        return true;
+        return blog;
     }
 
-//    public List<Blog> getsome(){
-//
-//    }
-
-    public boolean editBlog(BlogUpdateRequest blogUpdateRequest){
-
-        Blog currentBlog = getBlog(blogUpdateRequest.getBlogId());
-        currentBlog.setContent(blogUpdateRequest.getContent());
-        currentBlog.setTitle(blogUpdateRequest.getTitle());
-        persist(currentBlog);
-        return true;
+    public Blog editBlog(BlogUpdateRequest blogUpdateRequest, Blog blog){
+        if(!StringUtil.isEmpty(blogUpdateRequest.getContent()))
+            blog.setContent(blogUpdateRequest.getContent());
+        if(!StringUtil.isEmpty(blogUpdateRequest.getTitle()))
+            blog.setTitle(blogUpdateRequest.getTitle());
+        blog.setUpdatedTime(new Timestamp(new Date().getTime()));
+        persist(blog);
+        return blog;
     }
 }

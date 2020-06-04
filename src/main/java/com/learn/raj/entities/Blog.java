@@ -1,5 +1,7 @@
 package com.learn.raj.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NamedQueries;
@@ -17,15 +19,12 @@ import java.util.Set;
                 query = "select b from Blog b"),
         @NamedQuery(name = "com.learn.java.Blogs.updateBlog",
                 query = "Update Blog b set b.content = :content, b.updatedTime = :updated_time where b.blogId = :blog_id"),
-//        @NamedQuery(name = "com.learn.java.Blogs.addBlog",
-//                query = "insert into Blog (title, content, authorName, createdTime, updatedTime, noOfViews) values (?, ?, ?, ?, ?, ?)")
 })
 
-//insert into Blog (title, content, authorName, createdTime, updatedTime, noOfViews), (authorName, title, content, createdTime, updatedTime, noOfViews)
-
-
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
+@Builder
 public class Blog {
 
     @Id

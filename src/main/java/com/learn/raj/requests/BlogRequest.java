@@ -23,7 +23,4 @@ public class BlogRequest {
     @JsonProperty
     @NotEmpty
     private String content;
-    @JsonProperty
-    @NotEmpty
-    private String userName;
 }

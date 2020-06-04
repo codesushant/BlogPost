@@ -31,10 +31,12 @@ public class User implements Principal {
     private long userId;
     private String userName;
     private String password;
+    private String email;
 
-    public User(String userName, String password) {
+    public User(String userName, String password, String email) {
         this.userName = userName;
         this.password = password;
+        this.email = email;
     }
 
     @Override

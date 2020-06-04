@@ -19,12 +19,6 @@ public class CommentDao extends AbstractDAO<Comment> {
         super(sessionFactory);
     }
 
-    public boolean postComment(CommentRequest commentRequest){
-        Comment comment = new Comment(commentRequest.getBlogId(), commentRequest.getCommentText(), new Timestamp(new Date().getTime()));
-        persist(comment);
-        return true;
-    }
-
     public List<Comment> getCommentByBlogId(long blogId){
         return list(namedQuery("com.learn.java.Comment.findCommentByBlogId")
                 .setParameter("blog_id", blogId));
@@ -34,8 +28,8 @@ public class CommentDao extends AbstractDAO<Comment> {
         return get(commendId);
     }
 
-    public boolean saveComment(Comment comment){
-        persist(comment);
-        return true;
+    public Comment saveComment(Comment comment){
+        Comment updatedComment = persist(comment);
+        return updatedComment;
     }
 }

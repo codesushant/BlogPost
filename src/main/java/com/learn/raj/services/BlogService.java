@@ -6,18 +6,20 @@ import com.learn.raj.entities.CommentReply;
 import com.learn.raj.entities.User;
 import com.learn.raj.requests.*;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface BlogService {
-    boolean postBlog(BlogRequest blogRequest);
-    boolean editBlog(User user, BlogUpdateRequest blogUpdateRequest);
+    Blog postBlog(BlogRequest blogRequest, User user) throws IOException;
+    Blog editBlog(BlogUpdateRequest blogUpdateRequest, User user, long blogId);
     List<Blog> fetchAllBlogs();
     Blog fetchBlog(long blogId);
-    boolean saveUser(UserRegisterRequest userRegisterRequest);
+    User saveUser(UserRegisterRequest userRegisterRequest);
     List<User> fetchAllUsers();
     User getUser(String username);
-    boolean postCommentOnBlog(CommentRequest commentRequest);
+    User getUser(long userId);
+    Blog postComment(CommentRequest commentRequest, long blogId);
     List<Comment> getCommentFromBlog(long blogId);
-    boolean postReplyOnComment(ReplyRequest replyRequest);
+    Comment postReply(ReplyRequest replyRequest, long commentId);
     List<CommentReply> getReplyFromComment(long commentId);
 }

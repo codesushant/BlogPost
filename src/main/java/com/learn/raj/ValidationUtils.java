@@ -12,8 +12,7 @@ public class ValidationUtils {
         boolean validRequest = true;
 
         if(blogRequest == null || StringUtil.isEmpty(blogRequest.getAuthorName()) ||
-                StringUtil.isEmpty(blogRequest.getTitle() )|| StringUtil.isEmpty(blogRequest.getContent())
-        || StringUtil.isEmpty(blogRequest.getUserName())){
+                StringUtil.isEmpty(blogRequest.getTitle() )|| StringUtil.isEmpty(blogRequest.getContent())){
             log.error("All fields in request must not be empty");
             validRequest = false;
         }

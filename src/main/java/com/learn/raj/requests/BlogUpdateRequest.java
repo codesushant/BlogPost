@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BlogUpdateRequest {
     @JsonProperty
-    private long blogId;
-    @JsonProperty
     private String title;
     @JsonProperty
     private String content;

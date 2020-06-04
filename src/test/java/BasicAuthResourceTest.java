@@ -9,6 +9,7 @@ import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
+import io.dropwizard.testing.junit.ResourceTestRule;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
@@ -27,21 +28,23 @@ public class BasicAuthResourceTest {
     private static final UserDao userDao = Mockito.mock(UserDao.class);
     private static final CommentDao commentDao = Mockito.mock(CommentDao.class);
     private static final CommentReplyDao commentReplyDao = Mockito.mock(CommentReplyDao.class);
-    private static final BlogAuthenticator blogAuthenticator = new UnitOfWorkAwareProxyFactory()
-                .create(BlogAuthenticator.class, UserDao.class, userDao);
-    private static final BasicCredentialAuthFilter<User> BASIC_AUTH_HANDLER =
-            new BasicCredentialAuthFilter.Builder<User>()
-            .setAuthenticator(blogAuthenticator/*new BlogAuthenticator(userDao)*/)
-            .setRealm("SUPER SECRET STUFF")
-                        .buildAuthFilter();
-    private static final ResourceExtension resourceExtension = ResourceExtension
-            .builder()
-            .setTestContainerFactory(new GrizzlyWebTestContainerFactory())
-            .addProvider(new AuthDynamicFeature(BASIC_AUTH_HANDLER))
-            .addProvider(new AuthValueFactoryProvider.Binder<>(User.class))
+
+//    private static final BlogAuthenticator blogAuthenticator = new UnitOfWorkAwareProxyFactory()
+//                .create(BlogAuthenticator.class, UserDao.class, userDao);
+
+//    private static final BasicCredentialAuthFilter<User> BASIC_AUTH_HANDLER =
+//            new BasicCredentialAuthFilter.Builder<User>()
+//            .setAuthenticator(new BlogAuthenticator(userDao))
+//            .setRealm("SUPER SECRET STUFF")
+//                        .buildAuthFilter();
+//    private static final ResourceTestRule resourceExtension = ResourceTestRule
+//            .builder()
+//            .setTestContainerFactory(new GrizzlyWebTestContainerFactory())
+//            .addProvider(new AuthDynamicFeature(BASIC_AUTH_HANDLER))
+//            .addProvider(new AuthValueFactoryProvider.Binder<>(User.class))
 //            .addProvider(BlogResource.class)
-            .addResource(new BlogResource(blogDao, userDao, commentDao, commentReplyDao))
-            .build();
+//            .addResource(new BlogResource(blogDao, userDao, commentDao, commentReplyDao))
+//            .build();
 
 
 //    @Before
@@ -77,25 +80,28 @@ public class BasicAuthResourceTest {
 //
 //    }
 
-    @Test
-    public void testProtectedResource(){
-
-//        String credential = "Basic " + Base64.getEncoder().encodeToString("test@gmail.com:secret".getBytes());
-
-        User credential = new User("sushant.raj", "1234");
-        System.out.println(credential);
-
-        Response response = resourceExtension.target("/blog/checkauth1").request()
-                .header(HttpHeaders.AUTHORIZATION, "sushant.raj:1234")
-                .get(Response.class);
-
+//    @Test
+//    public void testProtectedResource(){
+//
+////        String credential = "Basic " + Base64.getEncoder().encodeToString("test@gmail.com:secret".getBytes());
+//
+////        User credential = new User("sushant.raj", "1234");
+////        System.out.println(credential);
+//
 //        Response response = resourceExtension
 //                .target("/blog/checkauth1")
 //                .request()
-//                .header(HttpHeaders.AUTHORIZATION, credential)
+//                .header(HttpHeaders.AUTHORIZATION, "sushant.raj:1234")
 //                .get(Response.class);
+//        System.out.println(response);
 //
-//        Assert.assertEquals(200, response.getStatus());
-
-    }
+////        Response response = resourceExtension
+////                .target("/blog/checkauth1")
+////                .request()
+////                .header(HttpHeaders.AUTHORIZATION, credential)
+////                .get(Response.class);
+////
+////        Assert.assertEquals(200, response.getStatus());
+//
+//    }
 }

@@ -17,10 +17,13 @@ public class UserDao extends AbstractDAO<User> {
         super(sessionFactory);
     }
 
-    public boolean storeUser(UserRegisterRequest userRegisterRequest){
-        User user = new User(userRegisterRequest.getUsername(), userRegisterRequest.getPassword());
+    public User storeUser(UserRegisterRequest userRegisterRequest){
+        User user = new User(
+                userRegisterRequest.getUsername(),
+                userRegisterRequest.getPassword(),
+                userRegisterRequest.getEmail());
         persist(user);
-        return true;
+        return user;
     }
 
     public List<User> fetchAll(){
@@ -31,16 +34,10 @@ public class UserDao extends AbstractDAO<User> {
         return get(id);
     }
 
-//    public User getUser(String username){
-//        return (User) namedQuery("com.learn.java.Users.findUserByUsername");
-//    }
-
     public List<User> findByName(String name) {
-//        StringBuilder builder = new StringBuilder("%");
-//        builder.append(name).append("%");
         return list(
                 namedQuery("com.learn.java.Users.findUserByUsername")
-                        .setParameter("user_name", name/*builder.toString()*/)
+                        .setParameter("user_name", name)
         );
     }
 }

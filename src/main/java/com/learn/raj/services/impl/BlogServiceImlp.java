@@ -1,6 +1,8 @@
 package com.learn.raj.services.impl;
 
-import com.learn.raj.*;
+import com.learn.raj.BlogException;
+import com.learn.raj.Constants;
+import com.learn.raj.ResponseCode;
 import com.learn.raj.dao.BlogDao;
 import com.learn.raj.dao.CommentDao;
 import com.learn.raj.dao.CommentReplyDao;
@@ -11,7 +13,10 @@ import com.learn.raj.entities.CommentReply;
 import com.learn.raj.entities.User;
 import com.learn.raj.requests.*;
 import com.learn.raj.services.BlogService;
+import com.learn.raj.services.EmailService;
+import com.sendgrid.Response;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -22,28 +27,48 @@ public class BlogServiceImlp implements BlogService {
     private final UserDao userDao;
     private final CommentDao commentDao;
     private  final CommentReplyDao commentReplyDao;
+    private final EmailService emailService;
 
-    public BlogServiceImlp(BlogDao blogDao, UserDao userDao, CommentDao commentDao, CommentReplyDao commentReplyDao) {
+    public BlogServiceImlp(BlogDao blogDao,
+                           UserDao userDao,
+                           CommentDao commentDao,
+                           CommentReplyDao commentReplyDao,
+                           EmailService emailService) {
         this.blogDao = blogDao;
         this.userDao = userDao;
         this.commentDao = commentDao;
         this.commentReplyDao = commentReplyDao;
+        this.emailService = emailService;
     }
 
-    public boolean postBlog(BlogRequest blogRequest) {
-        ValidationUtils.validateBlog(blogRequest);
-        User user = userDao.findByName(blogRequest.getUserName()).get(0);
-        blogDao.postBlog(blogRequest, user);
-        return true;
+    public Blog postBlog(BlogRequest blogRequest, User user) throws IOException {
+        Blog blog = blogDao.postBlog(blogRequest, user);
+        Response response = sendEmail(emailService, user.getEmail(),
+                Constants.Email.subject, blogRequest.getContent());
+        System.out.println(response.toString());
+        return blog;
     }
 
-    public boolean editBlog(User user, BlogUpdateRequest blogUpdateRequest){
+    public Response sendEmail(EmailService emailService, String recipient,
+                              String subject, String content) throws IOException {
+        EmailRequest emailRequest = EmailRequest
+                .builder()
+                .from(Constants.Email.emailFrom)
+                .to(recipient)
+                .subject(subject)
+                .content(content)
+                .build();
+        Response response = emailService.sendEmail(emailRequest);
+        return response;
+    }
 
-        Blog blog = blogDao.getBlog(blogUpdateRequest.getBlogId());
+    public Blog editBlog(BlogUpdateRequest blogUpdateRequest, User user, long blogId){
+
+        Blog blog = blogDao.getBlog(blogId);
         if(user.getUserId() != blog.getUserId())
             throw BlogException.create("Incorrect User, cannot update blog", ResponseCode.INCORRECT_USER);
-        blogDao.editBlog(blogUpdateRequest);
-        return true;
+        blog = blogDao.editBlog(blogUpdateRequest, blog);
+        return blog;
     }
 
     public List<Blog> fetchAllBlogs() {
@@ -56,9 +81,9 @@ public class BlogServiceImlp implements BlogService {
         return blogDao.getBlog(blogId);
     }
 
-    public boolean saveUser(UserRegisterRequest userRegisterRequest) {
-        userDao.storeUser(userRegisterRequest);
-        return false;
+    public User saveUser(UserRegisterRequest userRegisterRequest) {
+        User user = userDao.storeUser(userRegisterRequest);
+        return user;
     }
 
     public List<User> fetchAllUsers(){
@@ -71,13 +96,17 @@ public class BlogServiceImlp implements BlogService {
         return userDao.findByName(username).get(0);
     }
 
-    public boolean postCommentOnBlog(CommentRequest commentRequest){
-//        commentDao.postComment(commentRequest);
+    @Override
+    public User getUser(long userId) {
+        return userDao.getUser(userId);
+    }
+
+    public Blog postComment(CommentRequest commentRequest, long blogId){
         Comment comment = new Comment(commentRequest.getCommentText(), new Timestamp(new Date().getTime()));
-        Blog blog = blogDao.getBlog(commentRequest.getBlogId());
+        Blog blog = blogDao.getBlog(blogId);
         blog.getComments().add(comment);
-        blogDao.saveBlog(blog);
-        return true;
+        blog = blogDao.saveBlog(blog);
+        return blog;
     }
 
     public List<Comment> getCommentFromBlog(long blogId){
@@ -85,14 +114,13 @@ public class BlogServiceImlp implements BlogService {
         return commentList;
     }
 
-    public boolean postReplyOnComment(ReplyRequest replyRequest){
+    public Comment postReply(ReplyRequest replyRequest, long commentId){
 
         CommentReply commentReply = new CommentReply(replyRequest.getReplyText(), new Timestamp(new Date().getTime()));
-        Comment comment = commentDao.getComment(replyRequest.getCommentId());
+        Comment comment = commentDao.getComment(commentId);
         comment.getReplies().add(commentReply);
-        commentDao.saveComment(comment);
-//        commentReplyDao.postReply(replyRequest);
-        return true;
+        comment = commentDao.saveComment(comment);
+        return comment;
     }
 
     public List<CommentReply> getReplyFromComment(long commentId){

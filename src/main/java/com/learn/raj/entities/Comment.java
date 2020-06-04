@@ -1,6 +1,8 @@
 package com.learn.raj.entities;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,8 +13,6 @@ import java.util.Set;
         query = "select u from Comment u where u.blogId = :blog_id")
 })
 
-@ToString(exclude = "blog")
-@EqualsAndHashCode(exclude = "blog")
 @Entity
 @Table(name = "comments")
 @Data
