@@ -22,4 +22,5 @@ public interface BlogService {
     List<Comment> getCommentFromBlog(long blogId);
     Comment postReply(ReplyRequest replyRequest, long commentId);
     List<CommentReply> getReplyFromComment(long commentId);
+    public Blog updateViews(Blog blog);
 }

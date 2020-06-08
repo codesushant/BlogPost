@@ -43,6 +43,12 @@ public class BlogDao extends AbstractDAO<Blog> {
         return blog;
     }
 
+    public Blog updateViews(Blog blog){
+        blog.setNoOfViews(blog.getNoOfViews()+1);
+        persist(blog);
+        return blog;
+    }
+
     public Blog editBlog(BlogUpdateRequest blogUpdateRequest, Blog blog){
         if(!StringUtil.isEmpty(blogUpdateRequest.getContent()))
             blog.setContent(blogUpdateRequest.getContent());

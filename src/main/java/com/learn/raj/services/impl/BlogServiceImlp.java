@@ -76,9 +76,12 @@ public class BlogServiceImlp implements BlogService {
         return blogs;
     }
 
-    @Override
     public Blog fetchBlog(long blogId) {
         return blogDao.getBlog(blogId);
+    }
+
+    public Blog updateViews(Blog blog){
+        return blogDao.updateViews(blog);
     }
 
     public User saveUser(UserRegisterRequest userRegisterRequest) {
@@ -91,7 +94,6 @@ public class BlogServiceImlp implements BlogService {
         return users;
     }
 
-    @Override
     public User getUser(String username) {
         return userDao.findByName(username).get(0);
     }

@@ -76,6 +76,7 @@ public class BlogResource {
     @Path("/blogs/{blogId}")
     public Response getBlog(@PathParam("blogId") long blogId){
         Blog blog = blogService.fetchBlog(blogId);
+        blog = blogService.updateViews(blog);
         return Response.ok()
                 .entity(blog)
                 .build();
